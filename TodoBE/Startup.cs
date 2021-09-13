@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -11,6 +12,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TodoBE.Data;
+using TodoBE.Models;
 
 namespace TodoBE
 {
@@ -28,10 +31,17 @@ namespace TodoBE
         {
 
             services.AddControllers();
+
+            services.AddDbContextPool<TodoContext>(options => options.UseSqlServer(Configuration.GetConnectionString("TodoContextConnectionString")));
+
+            services.AddScoped<ITodoData, SqlTodoData>();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "TodoBE", Version = "v1" });
             });
+
+            //adding to use in controller
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
